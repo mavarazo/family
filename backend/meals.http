@@ -1,0 +1,22 @@
+GET http://localhost:8080/api/meals
+
+###
+POST http://localhost:8080/api/meals
+content-type: application/json
+
+{
+	"Name": "Pasta"
+}
+
+###
+PUT http://localhost:8080/api/meals/7
+content-type: application/json
+
+{
+	"Name": "Pasta mit Sauce",
+	"Link": "Betty Bossi",
+	"Description": "Hmm... fein"
+}
+
+###
+DELETE http://localhost:8080/api/meals/1
