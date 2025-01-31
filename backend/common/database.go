@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"os"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -14,7 +15,14 @@ type Database struct {
 var DB *gorm.DB
 
 func Init() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
+	goEnv := os.Getenv("GO_ENV")
+	databasePath := os.Getenv("FAMILY_DATABSE")
+
+	if databasePath == "" && goEnv == "production" {
+		databasePath = "/app/data/"
+	}
+
+	db, err := gorm.Open(sqlite.Open(databasePath+"database.sqlite3"), &gorm.Config{})
 	if err != nil {
 		fmt.Println("db err: (Init) ", err)
 	}

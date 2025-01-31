@@ -15,5 +15,5 @@ func main() {
 	v1 := r.Group("/api")
 	meal.MealRegister(v1.Group("/meals"))
 
-	r.Run("localhost:8080")
+	r.Run()
 }

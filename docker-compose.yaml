@@ -1,0 +1,12 @@
+services:
+  backend:
+    container_name: family-backend
+    build:
+      context: ./backend
+    volumes:
+      - data:/app/data
+    ports:
+      - 8080:8080
+
+volumes:  
+  data: {}
