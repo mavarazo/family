@@ -9,7 +9,7 @@ content-type: application/json
 }
 
 ###
-PUT http://localhost:8080/api/meals/7
+PUT http://localhost:8080/api/meals/1
 content-type: application/json
 
 {
@@ -19,4 +19,22 @@ content-type: application/json
 }
 
 ###
-DELETE http://localhost:8080/api/meals/1
+DELETE http://localhost:8080/api/meals/8
+
+###
+GET http://localhost:8080/api/mealdates
+
+###
+GET http://localhost:8080/api/mealdates/10
+
+###
+POST http://localhost:8080/api/mealdates
+content-type: application/json
+
+{
+	"Date": "2030-06-20T01:01:01Z",
+	"Type": "Lunch",
+	"Meal": {
+		"Name": "Hamburger"
+	}
+}
