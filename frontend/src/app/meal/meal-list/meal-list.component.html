@@ -1,0 +1,7 @@
+<p>meal-list works!</p>
+
+@for (meal of meals(); track meal.id) {
+    <li>{{ meal.name }}</li>
+} @empty {
+    <li>There are no items.</li>
+}

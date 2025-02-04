@@ -38,7 +38,7 @@ func AddMeal(c *gin.Context) {
 }
 
 func GetMeal(c *gin.Context) {
-	id, err := ParamInt(c, "id")
+	id, _ := ParamInt(c, "id")
 	meal, err := entity.FindMealById(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "meal not found"})
