@@ -9,12 +9,13 @@ import (
 )
 
 type Mealdate struct {
-	ID         int64     `json:"id"`
-	CreatedAt  time.Time `json:"createdAt"`
-	ModifiedAt null.Time `json:"modifiedAt"`
-	Date       time.Time `json:"date"`
-	Type       string    `json:"type"`
-	Meal       Meal      `json:"meal"`
+	ID         int64       `json:"id"`
+	CreatedAt  time.Time   `json:"createdAt"`
+	ModifiedAt null.Time   `json:"modifiedAt"`
+	Date       time.Time   `json:"date"`
+	Type       string      `json:"type"`
+	Meal       Meal        `json:"meal"`
+	Notes      null.String `json:"notes"`
 }
 
 func (mealdate *Mealdate) Insert() (*Mealdate, error) {
@@ -24,7 +25,7 @@ func (mealdate *Mealdate) Insert() (*Mealdate, error) {
 		return nil, err
 	}
 
-	stmt, err := tx.Prepare("INSERT INTO mealdates (date, type, meal_id) VALUES (?, ?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO mealdates (date, type, notes, meal_id) VALUES (?, ?, ?)")
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -38,7 +39,7 @@ func (mealdate *Mealdate) Insert() (*Mealdate, error) {
 		meal, _ = FindMealById(mealdate.Meal.ID)
 	}
 
-	result, err := stmt.Exec(mealdate.Date, mealdate.Type, meal.ID)
+	result, err := stmt.Exec(mealdate.Date, mealdate.Type, mealdate.Notes, meal.ID)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -55,13 +56,13 @@ func (mealdate *Mealdate) Update() (*Mealdate, error) {
 		return nil, err
 	}
 
-	stmt, err := tx.Prepare("UPDATE mealdates SET date = ?, type = ?, meal_id = ? WHERE id = ?")
+	stmt, err := tx.Prepare("UPDATE mealdates SET date = ?, type = ?, notes = ?, meal_id = ? WHERE id = ?")
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(mealdate.Date, mealdate.Type, mealdate.Meal.ID, mealdate.ID)
+	_, err = stmt.Exec(mealdate.Date, mealdate.Type, mealdate.Notes, mealdate.Meal.ID, mealdate.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -92,14 +93,14 @@ func (mealdate *Mealdate) Delete() (bool, error) {
 }
 
 func FindMealdateById(id int64) (*Mealdate, error) {
-	stmt, err := DB.Prepare("SELECT md.id, md.created_at, md.modified_at, md.date, md.type, m.ID, m.created_at, m.modified_at, m.name, m.link, m.description FROM mealdates AS md JOIN meals AS m ON m.ID = md.meal_id WHERE md.id = ?")
+	stmt, err := DB.Prepare("SELECT md.id, md.created_at, md.modified_at, md.date, md.type, md.notes, m.ID, m.created_at, m.modified_at, m.name, m.link, m.notes FROM mealdates AS md JOIN meals AS m ON m.ID = md.meal_id WHERE md.id = ?")
 	if err != nil {
 		return nil, err
 	}
 
 	mealdate := Mealdate{}
 	meal := Meal{}
-	err = stmt.QueryRow(id).Scan(&mealdate.ID, &mealdate.CreatedAt, &mealdate.ModifiedAt, &mealdate.Date, &mealdate.Type, &meal.ID, &meal.CreatedAt, &meal.ModifiedAt, &meal.Name, &meal.Link, &meal.Description)
+	err = stmt.QueryRow(id).Scan(&mealdate.ID, &mealdate.CreatedAt, &mealdate.ModifiedAt, &mealdate.Date, &mealdate.Type, &mealdate.Notes, &meal.ID, &meal.CreatedAt, &meal.ModifiedAt, &meal.Name, &meal.Link, &meal.Notes)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -111,7 +112,7 @@ func FindMealdateById(id int64) (*Mealdate, error) {
 }
 
 func FindAllMealdates() ([]Mealdate, error) {
-	result, err := DB.Query("SELECT md.id, md.created_at, md.modified_at, md.date, md.type, m.ID, m.created_at, m.modified_at, m.name, m.link, m.description FROM mealdates AS md JOIN meals AS m ON m.ID = md.meal_id")
+	result, err := DB.Query("SELECT md.id, md.created_at, md.modified_at, md.date, md.type, md.notes, m.ID, m.created_at, m.modified_at, m.name, m.link, m.notes FROM mealdates AS md JOIN meals AS m ON m.ID = md.meal_id")
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +122,7 @@ func FindAllMealdates() ([]Mealdate, error) {
 	for result.Next() {
 		mealdate := Mealdate{}
 		meal := Meal{}
-		err = result.Scan(&mealdate.ID, &mealdate.CreatedAt, &mealdate.ModifiedAt, &mealdate.Date, &mealdate.Type, &meal.ID, &meal.CreatedAt, &meal.ModifiedAt, &meal.Name, &meal.Link, &meal.Description)
+		err = result.Scan(&mealdate.ID, &mealdate.CreatedAt, &mealdate.ModifiedAt, &mealdate.Date, &mealdate.Type, &mealdate.Notes, &meal.ID, &meal.CreatedAt, &meal.ModifiedAt, &meal.Name, &meal.Link, &meal.Notes)
 		if err != nil {
 			return nil, err
 		}

@@ -5,6 +5,7 @@ CREATE TABLE mealdates (
     modified_at TIMESTAMP,
     date DATE NOT NULL,
     type TEXT NOT NULL,
+    notes TEXT,
     meal_id INTEGER,
     FOREIGN KEY (meal_id) REFERENCES meals (meal_id)
 );

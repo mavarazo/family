@@ -1,7 +1,13 @@
 <p>meal-list works!</p>
 
+<a routerLink="add">add meal</a>
+
 @for (meal of meals(); track meal.id) {
-    <li>{{ meal.name }}</li>
+<li>
+  {{ meal.name }}
+  <i [routerLink]="[meal.id, 'edit']">Edit</i>
+  <i (click)="remove(meal)">Delete</i>
+</li>
 } @empty {
-    <li>There are no items.</li>
+<li>There are no items.</li>
 }

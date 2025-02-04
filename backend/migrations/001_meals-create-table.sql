@@ -5,7 +5,7 @@ CREATE TABLE meals (
     modified_at TIMESTAMP,
     name TEXT NOT NULL,
     link TEXT,
-    description TEXT
+    notes TEXT
 );
 
 -- +goose StatementBegin
