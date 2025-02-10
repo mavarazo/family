@@ -1,13 +1,28 @@
-<p>meal-list works!</p>
-
-<a routerLink="add">add meal</a>
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1>Meals</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <button type="button" class="btn" [routerLink]="['add']">
+      <i class="bi bi-plus-square text-primary"></i>
+    </button>
+  </div>
+</div>
 
 @for (meal of meals(); track meal.id) {
-<li>
-  {{ meal.name }}
-  <i [routerLink]="[meal.id, 'edit']">Edit</i>
-  <i (click)="remove(meal)">Delete</i>
-</li>
-} @empty {
-<li>There are no items.</li>
-}
+<ul class="list-group">
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    {{ meal.name }}
+
+    <div class="btn-toolbar">
+      <button class="btn btn-sm" [routerLink]="[meal.id, 'edit']">
+        <i class="bi bi-pencil-square text-primary"></i>
+      </button>
+      <button class="btn btn-sm" (click)="remove(meal)">
+        <i class="bi bi-trash text-danger"></i>
+      </button>
+      <i></i>
+    </div>
+  </li>
+</ul>
+} @empty { There are no items. }

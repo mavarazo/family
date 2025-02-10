@@ -13,11 +13,12 @@ import {
 } from '@angular/forms';
 import { MealStore } from '../meal.store';
 import { Meal, ModifiableMeal } from '../meal.models';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-add-edit-meal',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   providers: [MealStore],
   templateUrl: './add-edit-meal.component.html',
   styleUrl: './add-edit-meal.component.scss',
@@ -32,6 +33,10 @@ export class AddEditMealComponent {
     link: new FormControl(''),
     notes: new FormControl(''),
   });
+
+  get name() {
+    return this.form.get('name');
+  }
 
   constructor() {
     effect(() => {
