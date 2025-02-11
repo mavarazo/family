@@ -27,6 +27,6 @@ export class MealService {
   }
 
   removeMeal(meal: Meal): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/api/meals/${meal.id}`);
+    return this.http.delete<void>(`${environment.apiUrl}/api/meals/${meal.ID}`);
   }
 }

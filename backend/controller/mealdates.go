@@ -17,8 +17,8 @@ func MealdateRegister(router *gin.RouterGroup) {
 }
 
 func GetMealdates(c *gin.Context) {
-	meals, _ := entity.FindAllMealdates()
-	c.IndentedJSON(http.StatusOK, meals)
+	mealdates, _ := entity.FindAllMealdates()
+	c.IndentedJSON(http.StatusOK, mealdates)
 }
 
 func AddMealdate(c *gin.Context) {

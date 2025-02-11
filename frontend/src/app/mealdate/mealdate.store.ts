@@ -7,8 +7,6 @@ import {
   withProps,
   withState,
 } from '@ngrx/signals';
-import { Meal, ModifiableMeal } from './meal.models';
-import { MealService } from './meal.service';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { filter, pipe, switchMap, tap } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
@@ -19,25 +17,160 @@ import {
   withRequestStatus,
 } from '../shared/request-status.feature';
 import { Router } from '@angular/router';
+import { Meal, Mealdate, ModifiableMealdate } from './mealdate.models';
+import { MealdateService } from './mealdate.service';
+import { MealService } from './meal.service';
 
-type MealState = {
+type MealdateState = {
+  mealdates: Mealdate[];
   meals: Meal[];
-  meal: Meal | undefined;
+  mealdate: Mealdate | undefined;
 };
 
-const initialState: MealState = {
+const initialState: MealdateState = {
+  mealdates: [],
   meals: [],
-  meal: undefined,
+  mealdate: undefined,
 };
 
-export const MealStore = signalStore(
+export const MealdateStore = signalStore(
   withState(initialState),
   withRequestStatus(),
   withProps(() => ({
+    mealdateService: inject(MealdateService),
     mealService: inject(MealService),
     router: inject(Router),
   })),
   withMethods((store) => ({
+    getMealdates: rxMethod<void>(
+      pipe(
+        tap(() => {
+          patchState(store, setPending());
+        }),
+        switchMap(() =>
+          store.mealdateService.getMealdates().pipe(
+            tapResponse({
+              next: (mealdates: Mealdate[]) => {
+                patchState(
+                  store,
+                  {
+                    mealdates: mealdates,
+                  },
+                  setFulfilled()
+                );
+              },
+              error: (err: string) => {
+                patchState(store, setError(err));
+              },
+            })
+          )
+        )
+      )
+    ),
+
+    addMealdate: rxMethod<ModifiableMealdate>(
+      pipe(
+        tap(() => {
+          patchState(store, setPending());
+        }),
+        switchMap((mealdate) =>
+          store.mealdateService.addMealdate(mealdate).pipe(
+            tapResponse({
+              next: (mealdate) => {
+                patchState(
+                  store,
+                  (state) => ({
+                    mealdates: [...state.mealdates, mealdate],
+                  }),
+                  setFulfilled()
+                );
+                store.router.navigate(['mealdates']);
+              },
+              error: (err: string) => {
+                patchState(store, setError(err));
+              },
+            })
+          )
+        )
+      )
+    ),
+
+    getMealdate: rxMethod<number>(
+      pipe(
+        tap(() => {
+          patchState(store, setPending());
+        }),
+        switchMap((mealdateId) =>
+          store.mealdateService.getMealdate(mealdateId).pipe(
+            tapResponse({
+              next: (mealdate) =>
+                patchState(store, { mealdate: mealdate }, setFulfilled),
+              error: (err: string) => patchState(store, setError(err)),
+            })
+          )
+        )
+      )
+    ),
+
+    changeMealdate: rxMethod<{ id: number; mealdate: ModifiableMealdate }>(
+      pipe(
+        tap(() => {
+          patchState(store, setPending());
+        }),
+        switchMap((model) =>
+          store.mealdateService.changeMealdate(model.id, model.mealdate).pipe(
+            tapResponse({
+              next: (mealdate) => {
+                const mealdates = [...store.mealdates()];
+                const index = mealdates.findIndex((x) => x.ID === mealdate.ID);
+
+                mealdates[index] = mealdate;
+
+                patchState(
+                  store,
+                  {
+                    mealdates: mealdates,
+                  },
+                  setFulfilled()
+                );
+
+                store.router.navigate(['mealdates']);
+              },
+              error: (err: string) => patchState(store, setError(err)),
+            })
+          )
+        )
+      )
+    ),
+
+    removeMealdate: rxMethod<Mealdate>(
+      pipe(
+        tap(() => {
+          patchState(store, setPending());
+        }),
+        switchMap((mealdate) =>
+          store.mealdateService.removeMealdate(mealdate).pipe(
+            tapResponse({
+              next: () => {
+                patchState(
+                  store,
+                  {
+                    mealdates: [
+                      ...store.mealdates().filter((x) => x.ID !== mealdate.ID),
+                    ],
+                  },
+                  setFulfilled()
+                );
+              },
+              error: (err: string) => {
+                patchState(store, setError(err));
+              },
+            })
+          )
+        )
+      )
+    ),
+
     getMeals: rxMethod<void>(
       pipe(
         tap(() => {
@@ -63,109 +196,10 @@ export const MealStore = signalStore(
         )
       )
     ),
-
-    addMeal: rxMethod<ModifiableMeal>(
-      pipe(
-        tap(() => {
-          patchState(store, setPending());
-        }),
-        switchMap((meal) =>
-          store.mealService.addMeal(meal).pipe(
-            tapResponse({
-              next: (meal) => {
-                patchState(
-                  store,
-                  (state) => ({
-                    meals: [...state.meals, meal],
-                  }),
-                  setFulfilled()
-                );
-                store.router.navigate(['meals']);
-              },
-              error: (err: string) => {
-                patchState(store, setError(err));
-              },
-            })
-          )
-        )
-      )
-    ),
-
-    getMeal: rxMethod<number>(
-      pipe(
-        tap(() => {
-          patchState(store, setPending());
-        }),
-        switchMap((mealId) =>
-          store.mealService.getMeal(mealId).pipe(
-            tapResponse({
-              next: (meal) => patchState(store, { meal: meal }, setFulfilled),
-              error: (err: string) => patchState(store, setError(err)),
-            })
-          )
-        )
-      )
-    ),
-
-    changeMeal: rxMethod<{ id: number; meal: ModifiableMeal }>(
-      pipe(
-        tap(() => {
-          patchState(store, setPending());
-        }),
-        switchMap((model) =>
-          store.mealService.changeMeal(model.id, model.meal).pipe(
-            tapResponse({
-              next: (meal) => {
-                const meals = [...store.meals()];
-                const index = meals.findIndex((x) => x.ID === meal.ID);
-
-                meals[index] = meal;
-
-                patchState(
-                  store,
-                  {
-                    meals: meals,
-                  },
-                  setFulfilled()
-                );
-
-                store.router.navigate(['meals']);
-              },
-              error: (err: string) => patchState(store, setError(err)),
-            })
-          )
-        )
-      )
-    ),
-
-    removeMeal: rxMethod<Meal>(
-      pipe(
-        tap(() => {
-          patchState(store, setPending());
-        }),
-        switchMap((meal) =>
-          store.mealService.removeMeal(meal).pipe(
-            tapResponse({
-              next: () => {
-                patchState(
-                  store,
-                  {
-                    meals: [...store.meals().filter((x) => x.ID !== meal.ID)],
-                  },
-                  setFulfilled()
-                );
-              },
-              error: (err: string) => {
-                patchState(store, setError(err));
-              },
-            })
-          )
-        )
-      )
-    ),
   })),
   withHooks({
     onInit(store) {
+      store.getMealdates();
       store.getMeals();
     },
   })

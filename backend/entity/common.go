@@ -1,14 +1,15 @@
 package entity
 
 import (
-	"database/sql"
-	"log"
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-var DB *sql.DB
+var DB *gorm.DB
 
 func Init() {
 	goEnv := os.Getenv("GO_ENV")
@@ -18,16 +19,15 @@ func Init() {
 		databasePath = "/app/data/"
 	}
 
-	db, err := sql.Open("sqlite3", databasePath+"database.sqlite3")
+	db, err := gorm.Open(sqlite.Open(databasePath+"database.sqlite3"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	DB = db
-}
+	db.AutoMigrate(&Meal{})
+	db.AutoMigrate(&Mealdate{})
 
-func Commit(tx *sql.Tx) {
-	if err := tx.Commit(); err != nil {
-		log.Fatalln(err)
-	}
+	DB = db
 }

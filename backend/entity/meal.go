@@ -1,126 +1,54 @@
 package entity
 
 import (
-	"database/sql"
-	"log"
-	"time"
-
-	"github.com/guregu/null/v5"
+	"gorm.io/gorm"
 )
 
 type Meal struct {
-	ID         int64       `json:"id"`
-	CreatedAt  time.Time   `json:"createdAt"`
-	ModifiedAt null.Time   `json:"modifiedAt"`
-	Name       string      `json:"name"`
-	Link       null.String `json:"link"`
-	Notes      null.String `json:"notes"`
+	gorm.Model
+	Name  string  `json:"name"`
+	Link  *string `json:"link"`
+	Notes *string `json:"notes"`
 }
 
 func (meal *Meal) Insert() (*Meal, error) {
-	tx, err := DB.Begin()
-	if err != nil {
-		log.Println(err)
-		return nil, err
+	result := DB.Create(&meal)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-
-	stmt, err := tx.Prepare("INSERT INTO meals (name, link, notes) VALUES (?, ?, ?)")
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	defer stmt.Close()
-
-	result, err := stmt.Exec(meal.Name, meal.Link, meal.Notes)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	Commit(tx)
-	id, _ := result.LastInsertId()
-	return FindMealById(id)
+	return FindMealById(meal.ID)
 }
 
 func (meal *Meal) Update() (*Meal, error) {
-	tx, err := DB.Begin()
-	if err != nil {
-		return nil, err
+	result := DB.Save(&meal)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-
-	stmt, err := tx.Prepare("UPDATE meals SET name = ?, link = ?, notes = ? WHERE id = ?")
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(meal.Name, meal.Link, meal.Notes, meal.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	Commit(tx)
 	return FindMealById(meal.ID)
 }
 
 func (meal *Meal) Delete() (bool, error) {
-	tx, err := DB.Begin()
-	if err != nil {
-		return false, err
+	result := DB.Delete(&meal)
+	if result.Error != nil {
+		return false, result.Error
 	}
-
-	stmt, err := DB.Prepare("DELETE from meals where id = ?")
-	if err != nil {
-		return false, err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(meal.ID)
-	if err != nil {
-		return false, err
-	}
-
-	Commit(tx)
 	return true, nil
 }
 
-func FindMealById(id int64) (*Meal, error) {
-	stmt, err := DB.Prepare("SELECT id, created_at, modified_at, name, link, notes from meals WHERE id = ?")
-	if err != nil {
-		return nil, err
-	}
-
-	meal := Meal{}
-	err = stmt.QueryRow(id).Scan(&meal.ID, &meal.CreatedAt, &meal.ModifiedAt, &meal.Name, &meal.Link, &meal.Notes)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
+func FindMealById(id uint) (*Meal, error) {
+	var meal Meal
+	result := DB.Find(&meal, id)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 	return &meal, nil
 }
 
 func FindAllMeals() ([]Meal, error) {
-	result, err := DB.Query("SELECT id, created_at, modified_at, name, link, notes from meals")
-	if err != nil {
-		return nil, err
+	var meals []Meal
+	result := DB.Order("name ASC").Find(&meals)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-	defer result.Close()
-
-	meals := make([]Meal, 0)
-	for result.Next() {
-		meal := Meal{}
-		err = result.Scan(&meal.ID, &meal.CreatedAt, &meal.ModifiedAt, &meal.Name, &meal.Link, &meal.Notes)
-		if err != nil {
-			return nil, err
-		}
-		meals = append(meals, meal)
-	}
-
-	err = result.Err()
-	if err != nil {
-		return nil, err
-	}
-	return meals, err
+	return meals, nil
 }

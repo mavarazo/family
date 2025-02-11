@@ -1,5 +1,5 @@
 export interface Meal {
-  id: number;
+  ID: number;
   name: string;
   link?: string;
   description?: string;
