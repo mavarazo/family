@@ -13,4 +13,8 @@ export class MealService {
   getMeals(): Observable<Meal[]> {
     return this.http.get<Meal[]>(`${environment.apiUrl}/api/meals/`);
   }
+
+  getMeal(id: number): Observable<Meal> {
+    return this.http.get<Meal>(`${environment.apiUrl}/api/meals/${id}`);
+  }
 }

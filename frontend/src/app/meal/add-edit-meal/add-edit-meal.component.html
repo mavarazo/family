@@ -6,7 +6,8 @@
       id="name"
       formControlName="name"
       class="form-control"
-      [class.is-invalid]="name?.invalid && (name?.touched || name?.dirty)"
+      [class.is-invalid]="name?.invalid && formSubmitAttempt"
+      required
     />
   </div>
 

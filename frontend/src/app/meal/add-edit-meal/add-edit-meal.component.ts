@@ -28,10 +28,12 @@ export class AddEditMealComponent {
   readonly store = inject(MealStore);
   readonly mealId = input<number>();
 
+  formSubmitAttempt: boolean = false;
+
   form = new FormGroup({
-    name: new FormControl('', Validators.required),
-    link: new FormControl(''),
-    notes: new FormControl(''),
+    name: new FormControl<string | undefined>(undefined, Validators.required),
+    link: new FormControl<string | undefined>(undefined),
+    notes: new FormControl<string | undefined>(undefined),
   });
 
   get name() {
@@ -55,6 +57,8 @@ export class AddEditMealComponent {
   }
 
   submit() {
+    this.formSubmitAttempt = true;
+
     if (this.form.invalid) {
       return;
     }

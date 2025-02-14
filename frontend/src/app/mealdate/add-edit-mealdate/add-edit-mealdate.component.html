@@ -1,26 +1,47 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <div class="mb-3">
+  <fieldset class="mb-3">
     <label for="date" class="form-label">Date:</label>
     <input
       type="date"
       id="date"
       formControlName="date"
       class="form-control"
-      [class.is-invalid]="date?.invalid && (date?.touched || date?.dirty)"
+      [class.is-invalid]="date?.invalid && formSubmitAttempt"
+      required
     />
-  </div>
+  </fieldset>
 
-  <div class="mb-3">
+  <fieldset class="mb-3">
     <label for="type" class="form-label">Type:</label>
-    <select2 [data]="types" formControlName="type" required></select2>
-  </div>
+    <select
+      id="type"
+      formControlName="type"
+      class="form-select"
+      [class.is-invalid]="type?.invalid && formSubmitAttempt"
+      required
+    >
+      @for (entry of mealdateType | keyvalue: null; track entry.key) {
+      <option value="{{ entry.key }}">{{ entry.value }}</option>
+      }
+    </select>
+  </fieldset>
 
-  <div class="mb-3">
-    <label for="exampleDataList" class="form-label">Meal:</label>
-    <select2 [data]="meals" formControlName="meal" required></select2>
-  </div>
+  <fieldset class="mb-3">
+    <label for="meal" class="form-label">Meal:</label>
+    <select
+      id="meal"
+      formControlName="meal"
+      class="form-select"
+      [class.is-invalid]="meal?.invalid && formSubmitAttempt"
+      required
+    >
+      @for (meal of meals(); track meal.ID) {
+      <option [ngValue]="meal">{{ meal.name }}</option>
+      }
+    </select>
+  </fieldset>
 
-  <div class="mb-3">
+  <fieldset class="mb-3">
     <label for="notes" class="form-label">Notes:</label>
     <textarea
       id="notes"
@@ -28,7 +49,7 @@
       rows="5"
       class="form-control"
     ></textarea>
-  </div>
+  </fieldset>
 
   <button type="submit" class="btn btn-primary">Save</button>
   <button type="button" class="btn btn-link" [routerLink]="['/mealdates']">

@@ -8,9 +8,8 @@ describe('AddEditMealdateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AddEditMealdateComponent]
-    })
-    .compileComponents();
+      imports: [AddEditMealdateComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AddEditMealdateComponent);
     component = fixture.componentInstance;

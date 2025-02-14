@@ -9,10 +9,12 @@
   </div>
 </div>
 
-@for (mealdate of mealdates(); track mealdate.ID) {
-<ul class="list-group">
+<ul class="list-group list-group-flush">
+  @for (mealdate of mealdates(); track mealdate.ID) {
   <li class="list-group-item d-flex justify-content-between align-items-center">
-    {{ mealdate.date | date }} {{ mealdate.meal.name }}
+    <a href="#" class="btn"
+      >{{ mealdate.date | date }} {{ mealdate.meal.name }}</a
+    >
 
     <div class="btn-toolbar">
       <button class="btn btn-sm" [routerLink]="[mealdate.ID, 'edit']">
@@ -24,5 +26,5 @@
       <i></i>
     </div>
   </li>
+  } @empty { There are no items. }
 </ul>
-} @empty { There are no items. }

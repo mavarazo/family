@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"log"
+
 	"gorm.io/gorm"
 )
 
@@ -14,6 +16,8 @@ type Mealdate struct {
 }
 
 func (mealdate *Mealdate) Insert() (*Mealdate, error) {
+	log.Println("add ", mealdate)
+
 	result := DB.Create(&mealdate)
 	if result.Error != nil {
 		return nil, result.Error

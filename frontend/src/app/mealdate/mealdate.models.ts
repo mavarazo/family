@@ -13,9 +13,9 @@ export interface Mealdate {
 }
 
 export interface ModifiableMealdate {
-  date: Date;
-  type: MealdateType;
-  meal: Meal;
+  date?: Date;
+  type?: MealdateType;
+  meal?: Meal;
   notes?: string;
 }
 
