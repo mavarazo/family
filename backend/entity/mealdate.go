@@ -2,17 +2,18 @@ package entity
 
 import (
 	"log"
+	"time"
 
 	"gorm.io/gorm"
 )
 
 type Mealdate struct {
 	gorm.Model
-	Date   LocalDate `json:"date"`
-	Type   string    `json:"type"`
-	MealID uint
-	Meal   Meal    `json:"meal"`
-	Notes  *string `json:"notes"`
+	PlannedAt LocalDate `json:"plannedAt"`
+	Type      string    `json:"type"`
+	MealID    uint
+	Meal      Meal    `json:"meal"`
+	Notes     *string `json:"notes"`
 }
 
 func (mealdate *Mealdate) Insert() (*Mealdate, error) {
@@ -50,9 +51,9 @@ func FindMealdateById(id uint) (*Mealdate, error) {
 	return &mealdate, nil
 }
 
-func FindAllMealdates() ([]Mealdate, error) {
+func FindAllMealdates(from time.Time, upto time.Time) ([]Mealdate, error) {
 	var mealdates []Mealdate
-	result := DB.Preload("Meal").Order("date ASC").Find(&mealdates)
+	result := DB.Preload("Meal").Where("planned_at >= ? and planned_at <= ?", from, upto).Order("planned_at ASC").Order("case when type = 'BREAKFAST' then 1 when type = 'LUNCH' then 2 else 3 end asc").Find(&mealdates)
 	if result.Error != nil {
 		return nil, result.Error
 	}

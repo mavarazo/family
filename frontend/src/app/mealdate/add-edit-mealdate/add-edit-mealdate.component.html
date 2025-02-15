@@ -1,12 +1,12 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <fieldset class="mb-3">
-    <label for="date" class="form-label">Date:</label>
+    <label for="plannedAt" class="form-label">Date:</label>
     <input
       type="date"
-      id="date"
-      formControlName="date"
+      id="plannedAt"
+      formControlName="plannedAt"
       class="form-control"
-      [class.is-invalid]="date?.invalid && formSubmitAttempt"
+      [class.is-invalid]="plannedAt?.invalid && formSubmitAttempt"
       required
     />
   </fieldset>

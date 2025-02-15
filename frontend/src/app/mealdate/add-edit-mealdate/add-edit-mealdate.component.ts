@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { MealdateStore } from '../mealdate.store';
 import {
   Meal,
@@ -23,10 +23,12 @@ import { KeyValuePipe } from '@angular/common';
   providers: [MealdateStore],
   templateUrl: './add-edit-mealdate.component.html',
   styleUrl: './add-edit-mealdate.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddEditMealdateComponent {
-  readonly store = inject(MealdateStore);
   readonly mealdateId = input<number>();
+
+  readonly store = inject(MealdateStore);
 
   readonly mealdateType = MealdateType;
   readonly meals = this.store.meals;
@@ -34,7 +36,10 @@ export class AddEditMealdateComponent {
   formSubmitAttempt: boolean = false;
 
   readonly form = new FormGroup({
-    date: new FormControl<Date | undefined>(undefined, Validators.required),
+    plannedAt: new FormControl<Date | undefined>(
+      undefined,
+      Validators.required
+    ),
     type: new FormControl<MealdateType | undefined>(
       undefined,
       Validators.required
@@ -43,8 +48,8 @@ export class AddEditMealdateComponent {
     notes: new FormControl<string | undefined>(undefined),
   });
 
-  get date() {
-    return this.form.get('date');
+  get plannedAt() {
+    return this.form.get('plannedAt');
   }
 
   get type() {
@@ -85,7 +90,6 @@ export class AddEditMealdateComponent {
     const id = this.mealdateId();
 
     const mealdate: ModifiableMealdate = Object.assign(this.form.value);
-    // console.log(JSON.stringify(mealdate));
     if (id) {
       this.store.changeMealdate({ id, mealdate });
     } else {

@@ -3,6 +3,7 @@ package controller
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mavarazo/family/entity"
@@ -17,7 +18,10 @@ func MealdateRegister(router *gin.RouterGroup) {
 }
 
 func GetMealdates(c *gin.Context) {
-	mealdates, _ := entity.FindAllMealdates()
+	from, _ := time.Parse("2006-01-02", c.DefaultQuery("from", "1900-01-01"))
+	upto, _ := time.Parse("2006-01-02", c.DefaultQuery("upto", "3000-01-01"))
+
+	mealdates, _ := entity.FindAllMealdates(from, upto)
 	c.IndentedJSON(http.StatusOK, mealdates)
 }
 

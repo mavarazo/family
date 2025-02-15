@@ -1,7 +1,8 @@
-import { Inject, inject } from '@angular/core';
+import { effect, Inject, inject } from '@angular/core';
 import {
   patchState,
   signalStore,
+  withComputed,
   withHooks,
   withMethods,
   withProps,
@@ -20,17 +21,23 @@ import { Router } from '@angular/router';
 import { Meal, Mealdate, ModifiableMealdate } from './mealdate.models';
 import { MealdateService } from './mealdate.service';
 import { MealService } from './meal.service';
+import { addDays, endOfWeek, startOfWeek, subDays } from 'date-fns';
 
 type MealdateState = {
   mealdates: Mealdate[];
   meals: Meal[];
   mealdate: Mealdate | undefined;
+  filter: { from: Date; upto: Date };
 };
 
 const initialState: MealdateState = {
   mealdates: [],
   meals: [],
   mealdate: undefined,
+  filter: {
+    from: startOfWeek(new Date(), { weekStartsOn: 1 }),
+    upto: endOfWeek(new Date(), { weekStartsOn: 1 }),
+  },
 };
 
 export const MealdateStore = signalStore(
@@ -48,22 +55,24 @@ export const MealdateStore = signalStore(
           patchState(store, setPending());
         }),
         switchMap(() =>
-          store.mealdateService.getMealdates().pipe(
-            tapResponse({
-              next: (mealdates: Mealdate[]) => {
-                patchState(
-                  store,
-                  {
-                    mealdates: mealdates,
-                  },
-                  setFulfilled()
-                );
-              },
-              error: (err: string) => {
-                patchState(store, setError(err));
-              },
-            })
-          )
+          store.mealdateService
+            .getMealdates(store.filter.from(), store.filter.upto())
+            .pipe(
+              tapResponse({
+                next: (mealdates: Mealdate[]) => {
+                  patchState(
+                    store,
+                    {
+                      mealdates: mealdates,
+                    },
+                    setFulfilled()
+                  );
+                },
+                error: (err: string) => {
+                  patchState(store, setError(err));
+                },
+              })
+            )
         )
       )
     ),
@@ -196,11 +205,23 @@ export const MealdateStore = signalStore(
         )
       )
     ),
+
+    prevWeek: () => {
+      const upto = subDays(store.filter.from(), 1);
+      const from = startOfWeek(upto, { weekStartsOn: 1 });
+      patchState(store, { filter: { from: from, upto: upto } });
+    },
+
+    nextWeek: () => {
+      const from = addDays(store.filter.upto(), 1);
+      const upto = endOfWeek(from, { weekStartsOn: 1 });
+      patchState(store, { filter: { from: from, upto: upto } });
+    },
   })),
   withHooks({
     onInit(store) {
-      store.getMealdates();
       store.getMeals();
+      store.getMealdates();
     },
   })
 );

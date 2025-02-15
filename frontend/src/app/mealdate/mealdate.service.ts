@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Mealdate, ModifiableMealdate } from './mealdate.models';
+import { format } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -10,8 +11,13 @@ import { Mealdate, ModifiableMealdate } from './mealdate.models';
 export class MealdateService {
   constructor(private http: HttpClient) {}
 
-  getMealdates(): Observable<Mealdate[]> {
-    return this.http.get<Mealdate[]>(`${environment.apiUrl}/api/mealdates/`);
+  getMealdates(from: Date, upto: Date): Observable<Mealdate[]> {
+    return this.http.get<Mealdate[]>(
+      `${environment.apiUrl}/api/mealdates/?from=${format(
+        from,
+        'yyyy-MM-dd'
+      )}&upto=${format(upto, 'yyyy-MM-dd')}`
+    );
   }
 
   addMealdate(mealdate: ModifiableMealdate): Observable<Mealdate> {

@@ -6,14 +6,14 @@ export enum MealdateType {
 
 export interface Mealdate {
   ID: number;
-  date: Date;
+  plannedAt: Date;
   type: MealdateType;
   meal: Meal;
   notes?: string;
 }
 
 export interface ModifiableMealdate {
-  date?: Date;
+  plannedAt?: Date;
   type?: MealdateType;
   meal?: Meal;
   notes?: string;
