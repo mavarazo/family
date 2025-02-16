@@ -19,10 +19,12 @@
   </button>
 </div>
 
+@for (entry of mealdates() | keyvalue; track entry.key) {
+{{ entry.key | date }}
 <ul class="list-group list-group-flush">
-  @for (mealdate of mealdates(); track mealdate.ID) {
+  @for (mealdate of entry.value; track mealdate.ID) {
   <li class="list-group-item d-flex justify-content-between align-items-center">
-    {{ mealdate.plannedAt | date }} {{ mealdate.meal.name }}
+    {{ mealdate.meal.name }}
 
     <div class="btn-toolbar">
       <button class="btn btn-sm" [routerLink]="[mealdate.ID, 'edit']">
@@ -34,5 +36,6 @@
       <i></i>
     </div>
   </li>
-  } @empty { There are no items. }
+  }
 </ul>
+} @empty { There are no items. }

@@ -1,4 +1,4 @@
-import { effect, Inject, inject } from '@angular/core';
+import { computed, effect, Inject, inject } from '@angular/core';
 import {
   patchState,
   signalStore,
@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
 import { Meal, Mealdate, ModifiableMealdate } from './mealdate.models';
 import { MealdateService } from './mealdate.service';
 import { MealService } from './meal.service';
-import { addDays, endOfWeek, startOfWeek, subDays } from 'date-fns';
+import { addDays, endOfWeek, format, startOfWeek, subDays } from 'date-fns';
 
 type MealdateState = {
   mealdates: Mealdate[];
@@ -47,6 +47,22 @@ export const MealdateStore = signalStore(
     mealdateService: inject(MealdateService),
     mealService: inject(MealService),
     router: inject(Router),
+  })),
+  withComputed((store) => ({
+    mealdatesGroupedByPlannedAt: computed(() => {
+      return store.mealdates().reduce((store, value) => {
+        const plannedAt = format(value.plannedAt, 'yyyy-MM-dd');
+        if (!store.has(plannedAt)) {
+          store.set(plannedAt, [value]);
+        } else {
+          const values = store.get(plannedAt);
+          if (values) {
+            values.push(value);
+          }
+        }
+        return store;
+      }, new Map<string, Mealdate[]>());
+    }),
   })),
   withMethods((store) => ({
     getMealdates: rxMethod<void>(
@@ -221,7 +237,6 @@ export const MealdateStore = signalStore(
   withHooks({
     onInit(store) {
       store.getMeals();
-      store.getMealdates();
     },
   })
 );
