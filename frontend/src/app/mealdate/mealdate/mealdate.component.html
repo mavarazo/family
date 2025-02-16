@@ -1,0 +1,70 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1>{{ mealdate()?.meal?.name }}</h1>
+</div>
+
+<div class="mt-4">
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item d-flex justify-content-start align-items-center">
+      <div class="container">
+        <div class="row">
+          <div class="col col-sm-2">Planned at</div>
+          <div class="col">
+            {{ mealdate()?.plannedAt | date }}
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-start align-items-center">
+      <div class="container">
+        <div class="row">
+          <div class="col col-sm-2">Type</div>
+          <div class="col">
+            {{ mealdate()?.type }}
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-start align-items-center">
+      <div class="container">
+        <div class="row">
+          <div class="col col-sm-2">Notes</div>
+          <div class="col">
+            {{ mealdate()?.notes }}
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div class="mt-4">
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item d-flex justify-content-start align-items-center">
+      <div class="container">
+        <div class="row">
+          <div class="col col-sm-2">Link</div>
+          <div class="col">
+            <a href="{{ mealdate()?.meal?.link }}" target="_blank">{{
+              mealdate()?.meal?.link
+            }}</a>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-start align-items-center">
+      <div class="container">
+        <div class="row">
+          <div class="col col-sm-2">Notes</div>
+          <div class="col">
+            {{ mealdate()?.meal?.notes }}
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

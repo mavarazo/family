@@ -9,7 +9,7 @@
   </div>
 </div>
 
-<div class="d-flex justify-content-between align-items-baseline">
+<div class="mt-4 d-flex justify-content-between align-items-baseline">
   <button class="btn" (click)="prevWeek()">
     <i class="bi bi-chevron-left text-primary"></i>
   </button>
@@ -19,23 +19,32 @@
   </button>
 </div>
 
-@for (entry of mealdates() | keyvalue; track entry.key) {
-{{ entry.key | date }}
-<ul class="list-group list-group-flush">
-  @for (mealdate of entry.value; track mealdate.ID) {
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    {{ mealdate.meal.name }}
+<div class="mt-4">
+  @for (entry of mealdates() | keyvalue; track entry.key) {
+  <h4>{{ entry.key | date }}</h4>
+  <ul class="list-group list-group-flush">
+    @for (mealdate of entry.value; track mealdate.ID) {
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
+    >
+      <a
+        href="#"
+        class="link-underline link-underline-opacity-0"
+        [routerLink]="[mealdate.ID]"
+        >{{ mealdate.meal.name }}</a
+      >
 
-    <div class="btn-toolbar">
-      <button class="btn btn-sm" [routerLink]="[mealdate.ID, 'edit']">
-        <i class="bi bi-pencil-square text-primary"></i>
-      </button>
-      <button class="btn btn-sm" (click)="remove(mealdate)">
-        <i class="bi bi-trash text-danger"></i>
-      </button>
-      <i></i>
-    </div>
-  </li>
-  }
-</ul>
-} @empty { There are no items. }
+      <div class="btn-toolbar">
+        <button class="btn btn-sm" [routerLink]="[mealdate.ID, 'edit']">
+          <i class="bi bi-pencil-square text-primary"></i>
+        </button>
+        <button class="btn btn-sm" (click)="remove(mealdate)">
+          <i class="bi bi-trash text-danger"></i>
+        </button>
+        <i></i>
+      </div>
+    </li>
+    }
+  </ul>
+  } @empty { There are no items. }
+</div>

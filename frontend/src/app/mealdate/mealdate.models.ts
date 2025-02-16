@@ -22,4 +22,6 @@ export interface ModifiableMealdate {
 export interface Meal {
   ID: number;
   name: string;
+  link?: string;
+  notes?: string;
 }

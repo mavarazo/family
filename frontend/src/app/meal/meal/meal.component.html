@@ -1,0 +1,31 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1>{{ meal()?.name }}</h1>
+</div>
+
+<div class="mt-4">
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item d-flex justify-content-start align-items-center">
+      <div class="container">
+        <div class="row">
+          <div class="col col-sm-2">Link</div>
+          <div class="col">
+            <a href="{{ meal()?.link }}" target="_blank">{{ meal()?.link }}</a>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-start align-items-center">
+      <div class="container">
+        <div class="row">
+          <div class="col col-sm-2">Notes</div>
+          <div class="col">
+            {{ meal()?.notes }}
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
